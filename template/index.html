@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Polling App</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>{{ data.question }}</h1>
+        <div id="options">
+            {% for field in data.fields %}
+                <button onclick="vote('{{ field }}')">{{ field }}</button>
+            {% endfor %}
+        </div>
+        <div class="results" id="results"></div>
+    </div>
+    <script>
+        async function vote(option) {
+            const response = await fetch('/vote', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ option: option })
+            });
+            const votes = await response.json();
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '';
+            for (const [key, value] of Object.entries(votes)) {
+                resultsDiv.innerHTML += `<p>${key}: ${value} votes</p>`;
+            }
+        }
+    </script>
+</body>
+</html>
